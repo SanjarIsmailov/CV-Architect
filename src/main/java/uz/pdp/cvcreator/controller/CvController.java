@@ -44,7 +44,6 @@ public class CvController {
 
     @PostMapping("/save")
     public void saveCv(@ModelAttribute User user, HttpServletResponse response) throws IOException {
-// Ensure skills are saved correctly
         List<Skill> skills = user.getSkills().stream()
                 .map(skill -> skillRepository.findByName(skill.getName()) != null
                         ? skillRepository.findByName(skill.getName())
@@ -54,7 +53,6 @@ public class CvController {
         user.setSkills(skills);
         userRepository.save(user);
 
-        // Generate PDF (existing code for PDF generation)
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
         document.addPage(page);
