@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create CV</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Create Your CV</h2>
+    <form th:action="@{/cv/save}" method="post" enctype="multipart/form-data">
+        <h4>User Information</h4>
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" required>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <h4>Education</h4>
+        <div id="education-section">
+            <div class="form-group">
+                <label for="educationName">Education Name</label>
+                <input type="text" class="form-control" id="educationName" name="educations[0].name" required>
+            </div>
+            <div class="form-group">
+                <label for="startYear">Start Year</label>
+                <input type="number" class="form-control" id="startYear" name="educations[0].startYear" required>
+            </div>
+            <div class="form-group">
+                <label for="finishYear">Finish Year</label>
+                <input type="number" class="form-control" id="finishYear" name="educations[0].finishYear" required>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addEducation()">Add More Education</button>
+        <h4>Experience</h4>
+        <div id="experience-section">
+            <div class="form-group">
+                <label for="company">Company</label>
+                <input type="text" class="form-control" id="company" name="experiences[0].company" required>
+            </div>
+            <div class="form-group">
+                <label for="experienceStartYear">Start Year</label>
+                <input type="number" class="form-control" id="experienceStartYear" name="experiences[0].startYear" required>
+            </div>
+            <div class="form-group">
+                <label for="experienceFinishYear">Finish Year</label>
+                <input type="number" class="form-control" id="experienceFinishYear" name="experiences[0].finishYear" required>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addExperience()">Add More Experience</button>
+        <h4>Skills</h4>
+        <div id="skill-section">
+            <div class="form-group">
+                <label for="skillName">Skill</label>
+                <select class="form-control skill-select" id="skillName" name="skills[0].name" required></select>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addSkill()">Add More Skill</button>
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    let educationCount = 1;
+    let experienceCount = 1;
+    let skillCount = 1;
+
+    function addEducation() {
+        const section = document.getElementById("education-section");
+        section.insertAdjacentHTML('beforeend', `
+            <div class="form-group">
+                <label for="educationName">Education Name</label>
+                <input type="text" class="form-control" name="educations[${educationCount}].name" required>
+            </div>
+            <div class="form-group">
+                <label for="startYear">Start Year</label>
+                <input type="number" class="form-control" name="educations[${educationCount}].startYear" required>
+            </div>
+            <div class="form-group">
+                <label for="finishYear">Finish Year</label>
+                <input type="number" class="form-control" name="educations[${educationCount}].finishYear" required>
+            </div>
+        `);
+        educationCount++;
+    }
+
+    function addExperience() {
+        const section = document.getElementById("experience-section");
+        section.insertAdjacentHTML('beforeend', `
+            <div class="form-group">
+                <label for="company">Company</label>
+                <input type="text" class="form-control" name="experiences[${experienceCount}].company" required>
+            </div>
+            <div class="form-group">
+                <label for="experienceStartYear">Start Year</label>
+                <input type="number" class="form-control" name="experiences[${experienceCount}].startYear" required>
+            </div>
+            <div class="form-group">
+                <label for="experienceFinishYear">Finish Year</label>
+                <input type="number" class="form-control" name="experiences[${experienceCount}].finishYear" required>
+            </div>
+        `);
+        experienceCount++;
+    }
+
+    function addSkill() {
+        const section = document.getElementById("skill-section");
+        section.insertAdjacentHTML('beforeend', `
+            <div class="form-group">
+                <label for="skillName">Skill</label>
+                <select class="form-control skill-select" name="skills[${skillCount}].name" required></select>
+            </div>
+        `);
+        initializeSelect2(skillCount);
+        skillCount++;
+    }
+
+    function initializeSelect2(index) {
+        $(`select[name="skills[${index}].name"]`).select2({
+            placeholder: 'Select a skill',
+            tags: true,
+            ajax: {
+                url: '/cv/skills/search',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(skill => {
+                            return {
+                                id: skill.name,
+                                text: skill.name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            createTag: function (params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                };
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        initializeSelect2(0);
+    });
+</script>
+</body>
+</html>
