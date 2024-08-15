@@ -5,66 +5,108 @@
     <title>Create CV</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f7f7f7;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        .form-section {
+            border-top: 1px solid #e3e3e3;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .btn-secondary {
+            margin-top: 15px;
+        }
+        .btn-primary {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h2>Create Your CV</h2>
-    <form th:action="@{/cv/save}" method="post" enctype="multipart/form-data">
-        <h4>User Information</h4>
-        <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" required>
+    <div class="card">
+        <div class="card-header text-center">
+            <h2>Create Your CV</h2>
         </div>
-        <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" required>
+        <div class="card-body">
+            <form th:action="@{/cv/save}" method="post" enctype="multipart/form-data">
+                <div class="form-section">
+                    <h4>User Information</h4>
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>Education</h4>
+                    <div id="education-section">
+                        <div class="form-group">
+                            <label for="educationName">Education Name</label>
+                            <input type="text" class="form-control" id="educationName" name="educations[0].name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="startYear">Start Year</label>
+                            <input type="number" class="form-control" id="startYear" name="educations[0].startYear" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="finishYear">Finish Year</label>
+                            <input type="number" class="form-control" id="finishYear" name="educations[0].finishYear" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addEducation()">Add More Education</button>
+                </div>
+
+                <div class="form-section">
+                    <h4>Experience</h4>
+                    <div id="experience-section">
+                        <div class="form-group">
+                            <label for="company">Company</label>
+                            <input type="text" class="form-control" id="company" name="experiences[0].company" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="experienceStartYear">Start Year</label>
+                            <input type="number" class="form-control" id="experienceStartYear" name="experiences[0].startYear" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="experienceFinishYear">Finish Year</label>
+                            <input type="number" class="form-control" id="experienceFinishYear" name="experiences[0].finishYear" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addExperience()">Add More Experience</button>
+                </div>
+
+                <div class="form-section">
+                    <h4>Skills</h4>
+                    <div id="skill-section">
+                        <div class="form-group">
+                            <label for="skillName">Skill</label>
+                            <select class="form-control skill-select" id="skillName" name="skills[0].name" required></select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addSkill()">Add More Skill</button>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <h4>Education</h4>
-        <div id="education-section">
-            <div class="form-group">
-                <label for="educationName">Education Name</label>
-                <input type="text" class="form-control" id="educationName" name="educations[0].name" required>
-            </div>
-            <div class="form-group">
-                <label for="startYear">Start Year</label>
-                <input type="number" class="form-control" id="startYear" name="educations[0].startYear" required>
-            </div>
-            <div class="form-group">
-                <label for="finishYear">Finish Year</label>
-                <input type="number" class="form-control" id="finishYear" name="educations[0].finishYear" required>
-            </div>
-        </div>
-        <button type="button" class="btn btn-secondary" onclick="addEducation()">Add More Education</button>
-        <h4>Experience</h4>
-        <div id="experience-section">
-            <div class="form-group">
-                <label for="company">Company</label>
-                <input type="text" class="form-control" id="company" name="experiences[0].company" required>
-            </div>
-            <div class="form-group">
-                <label for="experienceStartYear">Start Year</label>
-                <input type="number" class="form-control" id="experienceStartYear" name="experiences[0].startYear" required>
-            </div>
-            <div class="form-group">
-                <label for="experienceFinishYear">Finish Year</label>
-                <input type="number" class="form-control" id="experienceFinishYear" name="experiences[0].finishYear" required>
-            </div>
-        </div>
-        <button type="button" class="btn btn-secondary" onclick="addExperience()">Add More Experience</button>
-        <h4>Skills</h4>
-        <div id="skill-section">
-            <div class="form-group">
-                <label for="skillName">Skill</label>
-                <select class="form-control skill-select" id="skillName" name="skills[0].name" required></select>
-            </div>
-        </div>
-        <button type="button" class="btn btn-secondary" onclick="addSkill()">Add More Skill</button>
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
